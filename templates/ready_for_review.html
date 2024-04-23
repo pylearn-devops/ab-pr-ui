@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pull Requests Ready for Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .home-button {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none; /* Remove default underline */
+            display: inline-block; /* Display as block element */
+            margin-bottom: 20px;
+        }
+
+        .home-button:hover {
+            background-color: #0066cc; /* Darker blue on hover */
+        }
+
+                .download-button {
+            background-color: orange;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .download-button:hover {
+            background-color: #ff9900; /* Darker orange on hover */
+        }
+
+    </style>
+</head>
+<body>
+    <a href="/" class="home-button">Home</a> <!-- Home button with blue color -->
+    <a href="?download=excel" class="download-button">Download as Excel</a> <!-- Download button as an orange link -->
+    <h1>Pull Requests Ready for Review:</h1>
+    {% if ready_for_review_prs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Pull Request Link</th>
+                    <th>Author</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pr in ready_for_review_prs %}
+                    <tr>
+                        <td><a href="{{ pr.html_url }}">{{ pr.number }}</a></td>
+                        <td>{{ pr.title }}</td>
+                        <td><a href="{{ pr.html_url }}">{{ pr.html_url }}</a></td>
+                        <td>{{ pr.user.login }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No pull requests ready for review.</p>
+    {% endif %}
+
+    <button onclick="refreshPage()">Refresh</button>
+
+    <script>
+        function refreshPage() {
+            location.reload();
+        }
+    </script>
+
+</body>
+</html>
