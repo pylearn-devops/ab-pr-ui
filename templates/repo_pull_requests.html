@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ repo_name }} Pull Requests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f8fa;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .pull-request {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .pull-request-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .pull-request-details {
+            color: #586069;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .pull-request-link {
+            color: #0366d6;
+            text-decoration: none;
+        }
+
+        .pull-request-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ repo_name }} Pull Requests</h1>
+        {% if pull_requests %}
+            {% for pull_request in pull_requests %}
+                <div class="pull-request">
+                    <div class="pull-request-title">{{ pull_request.title }}</div>
+                    <div class="pull-request-details">
+                        <span>Number: #{{ pull_request.number }}</span><br>
+                        <span>Author: {{ pull_request.user.login }}</span><br>
+                        <span>Created at: {{ pull_request.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    </div>
+                    <a href="{{ pull_request.html_url }}" class="pull-request-link">View Pull Request</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No pull requests found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

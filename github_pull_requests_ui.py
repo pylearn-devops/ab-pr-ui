@@ -5,10 +5,9 @@ from github import Github
 import xlsxwriter
 import io
 
-token = os.getenv('autobot')
+token = os.getenv('token')
 g = Github(base_url="https://api.github.com", login_or_token=token)
 repo = g.get_repo("pylearn-devops/ab-github-actions")
-
 
 app = Flask(__name__, template_folder="templates")
 
@@ -49,7 +48,8 @@ def fetch_ready_for_review_pull_requests():
     pull_requests = repo.get_pulls(state="open")
 
     # Filter pull requests with the "Ready for Review" label
-    ready_for_review_prs = [pr for pr in pull_requests if "ready for review" in [label.name for label in pr.get_labels()]]
+    ready_for_review_prs = [pr for pr in pull_requests if
+                            "ready for review" in [label.name for label in pr.get_labels()]]
     return ready_for_review_prs
 
 
@@ -60,7 +60,8 @@ def fetch_ready_for_release_pull_requests():
     pull_requests = repo.get_pulls(state="open")
 
     # Filter pull requests with the "Ready for Release" label
-    ready_for_release_prs = [pr for pr in pull_requests if "ready for release" in [label.name for label in pr.get_labels()]]
+    ready_for_release_prs = [pr for pr in pull_requests if
+                             "ready for release" in [label.name for label in pr.get_labels()]]
     return ready_for_release_prs
 
 
@@ -70,7 +71,7 @@ def generate_excel_data(pull_requests):
     worksheet = workbook.add_worksheet()
 
     # Write headers
-    headers = ['Number', 'Title','Pull Request Link', 'Author']
+    headers = ['Number', 'Title', 'Pull Request Link', 'Author']
     for col, header in enumerate(headers):
         worksheet.write(0, col, header)
 
@@ -95,7 +96,6 @@ def send_excel_file(data, filename):
 
 @app.route('/releases')
 def releases():
-
     # Fetch all tags
     tags = repo.get_tags()
 
@@ -121,6 +121,50 @@ def releases():
         })
 
     return render_template('releases.html', tag_data=tag_data)
+
+
+@app.route('/ready-for-reviews')
+def ready_for_reviews():
+    # Get the organization
+    org = g.get_organization('pylearn-devops')
+
+    # Fetch all repositories in the organization
+    repos = org.get_repos()
+
+    # Initialize a list to store repository names
+    repo_names = []
+
+    # Iterate over repositories
+    for r in repos:
+        # Fetch pull requests with "ready for review" label
+        pull_requests = r.get_pulls(state='open', sort='created', base='master')
+
+        # Filter pull requests with "ready for review" label
+        ready_for_review_prs = [pr for pr in pull_requests if 'ready for review' in [label.name for label in pr.labels]]
+
+        # If there are pull requests ready for review, add the repository name to the list
+        if ready_for_review_prs:
+            repo_names.append(r.name)
+
+    return render_template('ready_for_reviews.html', repo_names=repo_names)
+
+
+@app.route('/ready-for-review/<repo_name>')
+def repo_pull_requests(repo_name):
+    # Get the organization
+    org = g.get_organization('pylearn-devops')
+
+    # Get the repository by name
+    r = org.get_repo(repo_name)
+
+    # Fetch pull requests with "ready for review" label
+    pull_requests = r.get_pulls(state='open', sort='created', base='master')
+
+    # Filter pull requests with "ready for review" label
+    ready_for_review_prs = [pr for pr in pull_requests if 'ready for review' in [label.name for label in pr.labels]]
+
+    # Render pull requests template with pull requests data
+    return render_template('repo_pull_requests.html', repo_name=repo_name, pull_requests=ready_for_review_prs)
 
 
 if __name__ == '__main__':

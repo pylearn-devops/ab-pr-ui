@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ready for Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f8fa;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .repo-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .repo-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .repo-name {
+            text-decoration: none;
+            color: #0366d6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Repositories with Pull Requests Ready for Review</h1>
+    <div class="repo-container">
+        {% for repo_name in repo_names %}
+        <div class="repo-card" onclick="loadPullRequests('{{ repo_name }}')">
+            <a href="#" class="repo-name">{{ repo_name }}</a>
+            <div id="{{ repo_name }}-pull-requests"></div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function loadPullRequests(repoName) {
+            const container = document.getElementById(`${repoName}-pull-requests`);
+            fetch(`/ready-for-review/${repoName}`)
+                .then(response => response.text())
+                .then(data => container.innerHTML = data);
+        }
+    </script>
+</body>
+</html>
